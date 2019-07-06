@@ -1,8 +1,9 @@
+const {Article} = require('../model')
 const controller = {};
 controller.create = (req, res)=>{
-	console.log(req, '[article create controller]')
+	console.log('[article create controller]')
 }
 controller.delete = (req, res)=>{
-	console.log(req, '[article delete controller]')
+	console.log('[article delete controller]')
 }
 module.exports = controller
