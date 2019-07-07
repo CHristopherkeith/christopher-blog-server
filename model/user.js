@@ -4,34 +4,25 @@ const autoIncrement = require('mongoose-auto-increment');
 
 const userSchema = new mongoose.Schema({
   // 名字
-  name: { type: String, required: true, default: '' },
+  name: { type: String, required: true},
 
-  //用户类型 0：博主，1：其他用户
+  //用户类型 0：管理员，1：普通用户
   type: { type: Number, default: 1 },
 
   // 手机
   phone: { type: String, default: '' },
 
   // 邮箱
-  email: {
-    type: String,
-    default: '',
-  },
-
-  // 个人介绍
-  introduce: { type: String, default: '' },
-
-  // 头像
-  avatar: { type: String, default: 'user' },
+  email: {type: String, default: ''},
 
   // 密码
   password: {
     type: String,
     required: true,
-    default: crypto
-      .createHash('md5')
-      .update('root')
-      .digest('hex'),
+    // default: crypto
+    //   .createHash('md5')
+    //   .update('root')
+    //   .digest('hex'),
   },
 
   // 创建日期
@@ -49,4 +40,35 @@ userSchema.plugin(autoIncrement.plugin, {
   incrementBy: 1,
 });
 const User = mongoose.model('User', userSchema);
+// 注册方法
+User.register = async function({name, phone, email, password}){
+  let result = {success: true, msg: ''};
+  // // 用户名和密码非空
+  // if(!name || !password){
+  //   result = {success: false, msg: '用户名或密码不能为空'};
+  //   return result;
+  // }
+  // // 邮箱格式
+  // const reg = new RegExp('^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$');
+  // if(email && !reg.test(email)){
+  //   result = {success: false, msg: '邮箱格式错误'};
+  //   return result;
+  // }
+  // // 用户名是否已存在
+  // if(this.find({name}).length>0){
+  //   result = {success: false, msg: '用户名已存在'};
+  //   return result;
+  // }
+  // 新建用户
+  await this.create({name, phone, email, password}).then((data)=>{
+    console.log(data, '[data]')
+    // return result;
+  },(err)=>{
+    console.log(err, '[err]')
+    result = {success: false, msg: '新建用户出错'};
+    // return result;
+  })
+  console.log(result, '233333333')
+  return result
+}
 module.exports = User;
