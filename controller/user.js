@@ -4,31 +4,36 @@ const controller = {};
 controller.login = (req, res)=>{
 }
 controller.register = async (req, res)=>{
-	console.log('[user register controller]')
-	let {name, phone, email, password} = req.body;
-	// let rs = User.create({
-	// 	name: 'root',
-	// 	password: 'admin'
-	// },function(err){
-	// 	if(err){
-	// 		console.log(err, '[err]')
-	// 	}
-	// })
-	let rs = await User.register({name, phone, email, password})
-	console.log(rs, '[rsrs]')
-	// res.status(200).json({success:true, msg: 'ok'});
+	let {name, phone, email, password, type=1} = req.body;
+	let rs = await User.register({name, phone, email, password, type});
 	let resData = {};
 	if(rs.success){
-		resData = {res}
+		resData = {res, data: rs.data}
 	}else{
 		resData = {res, httpCode: 400, msg: rs.msg}
 	}
 	responseClient(resData)
 }
-controller.editUser = (req, res)=>{
-	console.log('[user editUser controller]')
+controller.editUser = async (req, res)=>{
+	let {_id, type, phone, email, password} = req.body;
+	let rs = await User.editUser({_id, type, phone, email, password});
+	console.log(rs, '[rs]')
+	let resData = {};
+	if(rs.success){
+		resData = {res, data: rs.data}
+	}else{
+		resData = {res, httpCode: 400, msg: rs.msg}
+	}
+	responseClient(resData)
 }
-controller.deleteUser = (req, res)=>{
-	console.log('[user delete controller]')
+controller.deleteUser = async (req, res)=>{
+	let {_id} = req.body;
+	let rs = await User.deleteUser({_id});
+	if(rs.success){
+		resData = {res}
+	}else{
+		resData = {res, httpCode: 400, msg: rs.msg}
+	}
+	responseClient(resData);
 }
 module.exports = controller
