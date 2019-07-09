@@ -1,7 +1,16 @@
 const {User} = require('../model')
 const {responseClient} = require('../lib')
 const controller = {};
-controller.login = (req, res)=>{
+controller.login = async (req, res)=>{
+	let {name, password} = req.body;
+	let rs = await User.login({name, password});
+	let resData = {};
+	if(rs.success){
+		resData = {res, data: rs.data}
+	}else{
+		resData = {res, httpCode: 400, msg: rs.msg}
+	}
+	responseClient(resData)
 }
 controller.register = async (req, res)=>{
 	let {name, phone, email, password, type=1} = req.body;
@@ -35,5 +44,16 @@ controller.deleteUser = async (req, res)=>{
 		resData = {res, httpCode: 400, msg: rs.msg}
 	}
 	responseClient(resData);
+}
+controller.getUsersList = async (req, res)=>{
+	let {skip=0, limit=100} = req.query;
+	let rs = await User.getUsersList({skip, limit});
+	let resData = {};
+	if(rs.success){
+		resData = {res, data: rs.data}
+	}else{
+		resData = {res, httpCode: 400, msg: rs.msg}
+	}
+	responseClient(resData)
 }
 module.exports = controller

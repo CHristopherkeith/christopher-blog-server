@@ -4,4 +4,5 @@ module.exports = (app)=>{
 	app.post('/register', controller.register);
 	app.post('/editUser', controller.editUser);
 	app.post('/deleteUser', controller.deleteUser);
+	app.get('/getUsersList', controller.getUsersList);
 }

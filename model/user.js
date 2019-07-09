@@ -117,5 +117,36 @@ User.editUser = async function({_id, type, phone, email, password}){
   console.log(result, '[result]')
   return result;
 }
+// 获取用户列表
+User.getUsersList = async function({skip, limit}){
+  let result = {success: true, msg: ''};
+  await this.find({}, null, {skip: parseInt(skip), limit: parseInt(limit)}).exec()
+  .then((data)=>{
+      result = {...result, data: {data, conut: data.length} }
+  },(err)=>{
+      result = {success: false, msg: '获取用户列表出错'};
+      console.log(err, '[err]')
+  })
+  return result;
+}
+// 登录
+User.login = async function({name, password}){
+  let result = {success: true, msg: ''};
+  result = this.validateData({name, password, type: true});
+  if(!result.success){
+    return result;
+  }
+  await this.findOne({name, password}).exec()
+  .then((data)=>{
+    if(!data){
+      result = {success: false, msg: '用户名或密码不正确'};
+    }
+    console.log(data, '[data]')
+  },(err)=>{
+    console.log(err, '[err]')
+    result = {success: false, msg: '登录出错'};
+  })
+  return result;
+}
 
 module.exports = User;
