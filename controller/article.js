@@ -12,12 +12,29 @@ controller.createArticle = async (req, res)=>{
 	}
 	responseClient(resData)
 }
-controller.deleteArticle = (req, res)=>{
+controller.deleteArticle = async (req, res)=>{
+	let {_id} = req.body;
+	let rs = await Article.deleteArticle({_id});
+	let resData = {};
+	if(rs.success){
+		resData = {res, data: rs.data}
+	}else{
+		resData = {res, httpCode: 400, msg: rs.msg}
+	}
+	responseClient(resData)
 }
-controller.editArticle = (req, res)=>{
+controller.editArticle = async (req, res)=>{
+	let {title, author, content, type, state, tag, _id} = req.body;
+	let rs = await Article.editArticle({title, author, content, type, state, tag, _id});
+	let resData = {};
+	if(rs.success){
+		resData = {res, data: rs.data}
+	}else{
+		resData = {res, httpCode: 400, msg: rs.msg}
+	}
+	responseClient(resData)
 }
 controller.getArticlesList = async (req, res)=>{
-	console.log('111111111111')
 	let {skip=0, limit=100} = req.query;
 	console.log(skip, limit, '[skip limit]')
 	let rs = await Article.getArticlesList({skip, limit});

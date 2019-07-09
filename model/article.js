@@ -63,6 +63,7 @@ Article.createArticle = async function({title, author, content, type, state, tag
 	}
 	await this.create({title, author, type, state, tag}).then((data)=>{
 		console.log(data, '[data]')
+		result = {...result, data: {_id: data._id}}
 	},(err)=>{
 		console.log(err, '[err]')
 		result = {success: false, msg: '创建文章失败'}
@@ -72,12 +73,41 @@ Article.createArticle = async function({title, author, content, type, state, tag
 // 获取文章列表
 Article.getArticlesList = async function({skip, limit}){
 	let result = {success: true, msg: ''};
-	await this.find({}, null, {skip: parseInt(skip), limit: parseInt(limit)}).exec().then((data)=>{
+	await this.find({}, null, {skip: parseInt(skip), limit: parseInt(limit)})
+	.populate({ path: 'author', select: {name: 1} })
+	.populate({ path: 'tag', select: {name: 1} })
+	.exec().then((data)=>{
 		console.log(data, '[data]')
 		result = {...result, data: data}
 	},(err)=>{
 		console.log(err, '[err]')
 		result = {success: false, msg: '获取文章列表失败'}
+	})
+	return result;
+}
+// 删除文章
+Article.deleteArticle = async function({_id}){
+	let result = {success: true, msg: ''};
+	await this.deleteOne({_id}).then((data)=>{
+		console.log(data, '[data]')
+	},(err)=>{
+		console.log(err, '[err]')
+		result = {success: false, msg: '删除文章失败'}
+	})
+	return result;
+}
+// 编辑文章
+Article.editArticle = async function({title, author, content, type, state, tag, _id}){
+	let result = {success: true, msg: ''};
+	result = this.validateData({title, author, type, state, tag})
+	if(!result.success){
+		return result
+	}
+	await this.update({_id}, {title, author, content, type, state, tag}).then((data)=>{
+		console.log(data, '[data]')
+	},(err)=>{
+		console.log(err, '[err]')
+		result = {success: false, msg: '更新文章失败'}
 	})
 	return result;
 }
